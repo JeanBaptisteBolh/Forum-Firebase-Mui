@@ -1,4 +1,6 @@
 import { GoogleLoginButton, FacebookLoginButton } from "react-social-login-buttons";
+// Firebase imports
+import { loginGoogle } from "../firebase/auth";
 
 const SocialLoginButtons = () => {
   return (
@@ -12,7 +14,7 @@ const SocialLoginButtons = () => {
           width: '100%',
           fontSize: '1rem',
         }}
-      onClick={() => alert("Hello")}
+      onClick={() => loginGoogle()}
       />
       <FacebookLoginButton 
         style = {{
@@ -21,7 +23,7 @@ const SocialLoginButtons = () => {
           width: "100%",
           fontSize: '1rem',
         }}
-        onClick={() => alert("Hello")} 
+        onClick={() => alert("Facebook login button pressed")} 
       />
     </div>
   );
