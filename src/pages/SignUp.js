@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
@@ -23,19 +23,17 @@ import Copyright from "../components/Copyright";
 import {
   auth,
   createUserEmailPassword,
+  userEmailExists,
 } from "../firebase/auth";
 
 const SignUp = () => {
   // Load browser history
   const navigate = useNavigate();
 
+  const [signUpSuccessMsg, setSignUpSuccessMsg] = useState("");
+
   // Get authentication variables
   const [user, loading, error] = useAuthState(auth);
-
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [firstname, setFirstname] = useState("");
-  // const [lastname, setLastname] = useState("");
 
   // react-hook-form
   const {control, handleSubmit, formState: { errors }} = useForm({
@@ -47,13 +45,24 @@ const SignUp = () => {
     },
   });
 
-  const onSignUp = (data) => {
-    createUserEmailPassword(
-      data.firstName, 
-      data.lastName, 
-      data.email, 
-      data.password
-    );
+  const onSubmit = async (data) => {
+    const userExists = await userEmailExists(data.email)
+    if (userExists) {
+      setSignUpSuccessMsg("User already exists.  Follow the link below to sign in.")
+    } else {
+      const result = await createUserEmailPassword(
+        data.firstName, 
+        data.lastName, 
+        data.email, 
+        data.password
+      );
+      if (!result) {
+        setSignUpSuccessMsg("Error Signing Up.")
+      }
+    }
+  };
+  const onError = () => {
+    setSignUpSuccessMsg("")
   };
 
   useEffect(() => {
@@ -82,7 +91,7 @@ const SignUp = () => {
         {/**  SIGN UP FORM **/}
         <Box 
           component="form" 
-          onSubmit={handleSubmit(onSignUp)}
+          onSubmit={handleSubmit(onSubmit, onError)}
         >
           {/** GOOGLE/FACEBOOK SIGN IN BUTTONS **/}
           <SocialLoginButtons />
@@ -98,7 +107,6 @@ const SignUp = () => {
               <Controller
                 name="firstName"
                 control={control}
-                rules={{ required: "Please enter your first name" }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     onChange={onChange}
@@ -120,7 +128,6 @@ const SignUp = () => {
               <Controller
                 name="lastName"
                 control={control}
-                rules={{ required: "Please enter your last name" }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     onChange={onChange}
@@ -141,7 +148,6 @@ const SignUp = () => {
               <Controller
                 name="email"
                 control={control}
-                rules={{ required: "Please enter your email" }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     onChange={onChange}
@@ -150,6 +156,7 @@ const SignUp = () => {
                     fullWidth
                     id="email"
                     label="Email Address"
+                    type="email"
                     name="email"
                     autoComplete="email"
                   />
@@ -162,7 +169,6 @@ const SignUp = () => {
               <Controller
                 name="password"
                 control={control}
-                rules={{ required: "Please enter your password" }}
                 render={({ field: { onChange, value } }) => (
                   <TextField
                     onChange={onChange}
@@ -174,11 +180,22 @@ const SignUp = () => {
                     type="password"
                     id="password"
                     autoComplete="new-password"
-                    sx={{ mb: 2 }}
                   />
                 )}
               />
             </Grid>
+
+            {/** FORM SEND SUCCESS MESSAGE **/}
+            {signUpSuccessMsg.length > 0 && (
+              <Grid item xs={12}>
+                <Typography
+                  variant="body2"
+                  color = "red"
+                >
+                  {signUpSuccessMsg}
+                </Typography>
+              </Grid>
+            )}
 
             {/** EMAIL UPDATES CHECKBOX
             <Grid item xs={12}>
@@ -191,13 +208,13 @@ const SignUp = () => {
 
           </Grid>
 
-          <Button type="submit" fullWidth variant="contained" sx={{ mb: 2 }}>
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 2 }}>
             Sign Up
           </Button>
 
           <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

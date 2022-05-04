@@ -17,6 +17,10 @@ import DividerWithText from "../components/DividerWithText"
 import Copyright from "../components/Copyright"
 
 import {
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
+import {
   auth,
   loginEmailPassword,
 } from "../firebase/auth";
@@ -25,7 +29,7 @@ const SignIn = () => {
   // Load browser history
   const navigate = useNavigate();
   
-  const [signInSuccess, setSignInSuccess] = useState(true);
+  const [signInSuccessMsg, setSignInSuccessMsg] = useState("");
 
   // Get authentication variables
   const [user, loading, error] = useAuthState(auth);
@@ -37,12 +41,11 @@ const SignIn = () => {
       password: "",
     },
   });
-
-
-  // Triggered when user clicks sign in button
-  const onSignIn = (data) => {
-    setSignInSuccess(loginEmailPassword(data.email, data.password));
-    console.log("Was sign in a success?" + signInSuccess)
+  const onSubmit = async (data) => {
+    const result = await loginEmailPassword(data.email, data.password);
+    if (!result) {
+      setSignInSuccessMsg("Invalid Email/Password");
+    }
   }
 
   // Reroute user to the home page if already signed in
@@ -92,7 +95,7 @@ const SignIn = () => {
           {/** SIGN IN FORM **/}
           <Box 
             component="form" 
-            onSubmit={handleSubmit(onSignIn)}
+            onSubmit={handleSubmit(onSubmit)}
           >
 
             {/** GOOGLE/FACEBOOK SIGN IN BUTTONS **/}
@@ -105,7 +108,6 @@ const SignIn = () => {
             <Controller
               name="email"
               control={control}
-              rules={{ required: "Please enter your email" }}
               render={({ field: { onChange, value } }) => (
                 <TextField
                   onChange={onChange}
@@ -114,15 +116,16 @@ const SignIn = () => {
                   fullWidth
                   id="email"
                   label="Email Address"
+                  type="email"
                   name="email"
                   autoComplete="email"
+                  sx={{ mt: 2, mb: 2 }}
                 />
               )}
             />
             <Controller
               name="password"
               control={control}
-              rules={{ required: "Please enter your password" }}
               render={({ field: { onChange, value } }) => (
                 <TextField
                   onChange={onChange}
@@ -139,10 +142,17 @@ const SignIn = () => {
               )}
             />
 
-            { !signInSuccess && 
-              <Typography variant="body2" sx={{ mb: 1 }}>Incorrect email/password</Typography>
-            }
-            
+
+            {/** FORM SEND SUCCESS MESSAGE **/}
+            {signInSuccessMsg.length > 0 && (
+              <Typography
+                variant="body2"
+                sx={{ mb: 1 }}
+                color = "red"
+              >
+                {signInSuccessMsg}
+              </Typography>
+            )}
             
             {/** Remember me checkbox **/}
             {/** *
@@ -151,6 +161,7 @@ const SignIn = () => {
                 label="Remember me"
               />
             */}
+
 
             <Grid container sx={{ mb: 2 }}>
               <Grid item xs>

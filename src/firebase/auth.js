@@ -20,6 +20,7 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
   GoogleAuthProvider,
+  FacebookAuthProvider,
 } from "firebase/auth";
 
 import firebaseConfig from "./config";
@@ -36,8 +37,10 @@ const db = getFirestore(app);
 // Initialize Analytics
 //const analytics = getAnalytics(app);
 
-// Initialize google authentication module
+// Initialize google/facebook authentication modules
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
 
 // Create a user using email
 const createUserEmailPassword = async (firstname, lastname, email, password) => {
@@ -58,20 +61,19 @@ const createUserEmailPassword = async (firstname, lastname, email, password) => 
 };
 
 
-//Sign in via email/password
+// Sign in via email/password
 const loginEmailPassword = async (email, password) => {
   try {
-    //This function is provided by firebase
-    await signInWithEmailAndPassword(auth, email, password);
+    const res = await signInWithEmailAndPassword(auth, email, password)
+    return true;
   } catch (err) {
-    console.error(err);
-
-    /******* NEED TO HANDLE USER DOESN'T EXIST! *******/
+    console.error("FIREBASE ERROR: " + err);
+    return false;
   }
 };
 
 
-//Sign in via google account
+// Sign in via google account
 const loginGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
@@ -103,7 +105,7 @@ const loginGoogle = async () => {
   }
 };
 
-//Send password reset link to an email address
+// Send password reset link to an email address
 const sendPassResetEmail = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -114,7 +116,7 @@ const sendPassResetEmail = async (email) => {
   }
 };
 
-//Logout.  Firebase will know what user is logged in through the auth variable.
+// Logout.  Firebase will know what user is logged in through the auth variable.
 const logout = () => {
   try { 
     auth.signOut();
@@ -122,6 +124,18 @@ const logout = () => {
     console.error(err);
   }
 };
+
+
+// Check if user email already exists
+const userEmailExists = async (email) => {
+  const q = query(collection(db, "users"), where("email", "==", email));
+  const docs = await getDocs(q);
+  if (docs.docs.length > 0) {
+    return true;
+  } else { 
+    return false;
+  }
+}
 
 export {
   auth,
@@ -131,4 +145,5 @@ export {
   loginGoogle,
   sendPassResetEmail,
   logout,
+  userEmailExists,
 }
