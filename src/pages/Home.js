@@ -1,15 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Typography from "@mui/material/Typography";
-
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/auth";
 
 import TopBar from "../components/TopBar"
 import PostList from "../components/Forum/PostList"
-
-//import NavBar from "../components/NavBar"
 
 const Home = () => {
   // Load browser history
@@ -30,7 +26,7 @@ const Home = () => {
 
   return (
     <div>
-      <TopBar/>
+      <TopBar posting={false} />
       <PostList/>
     </div>
   );

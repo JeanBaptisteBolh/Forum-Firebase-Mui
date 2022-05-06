@@ -56,12 +56,12 @@ const SignUp = () => {
         data.password
       );
       if (!result) {
-        setSignUpSuccessMsg("Error Signing Up.")
+        setSignUpSuccessMsg("Error Signing Up")
       }
     }
   };
   const onError = () => {
-    setSignUpSuccessMsg("")
+    setSignUpSuccessMsg("Error")
   };
 
   useEffect(() => {

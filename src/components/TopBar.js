@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Toolbar from '@mui/material/Toolbar';
@@ -8,7 +10,9 @@ import { FcGlobe } from "react-icons/fc";
 
 import { logout } from "../firebase/auth";
 
-const TopBar = () => {
+const TopBar = (props) => {
+  const navigate = useNavigate();
+
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -68,9 +72,16 @@ const TopBar = () => {
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
-        <Button variant="outlined" color="inherit" onClick={logout}>
-          Post
-        </Button>
+        
+        { !props.posting && 
+          <Button variant="outlined" color="inherit" onClick={() => {
+            console.log("Navigating")
+            navigate("/create-post")
+          }}>
+            Post
+          </Button>
+        }
+
         <Button variant="outlined" color="inherit" onClick={logout}>
           Logout
         </Button>

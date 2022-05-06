@@ -83,7 +83,6 @@ const loginGoogle = async () => {
     
     // Attempt to pull first and lastname out
     const nameArray = user.displayName.split(' ');
-    console.log(nameArray)
     const firstName = nameArray[0]
     let lastName = nameArray[nameArray.length - 1]
     if (lastName === firstName) {
