@@ -14,7 +14,7 @@ const Post = (props) => {
         },
         padding: 1
       }}>
-        <Typography variant="h4">{props.title}</Typography>
+        <Typography variant="h5">{props.title}</Typography>
         <Typography variant="p">{props.body}</Typography>
       </Card>
     </div>

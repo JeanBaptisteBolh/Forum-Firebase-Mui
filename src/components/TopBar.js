@@ -54,6 +54,7 @@ const TopBar = () => {
       sx={{
         flexGrow: 1,
         backgroundColor: "primary.main",
+        mb: 2
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>

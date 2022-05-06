@@ -4,7 +4,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
 
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -15,10 +14,6 @@ import Typography from '@mui/material/Typography';
 import SocialLoginButtons from "../components/SocialLoginButtons"
 import DividerWithText from "../components/DividerWithText"
 import Copyright from "../components/Copyright"
-
-import {
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 
 import {
   auth,
@@ -57,7 +52,6 @@ const SignIn = () => {
 
   return (
     <Grid container component="main">
-      <CssBaseline />
 
       {/** IMAGES **/}
       <Grid
