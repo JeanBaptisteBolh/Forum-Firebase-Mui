@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
 
 // Material UI imports
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { FcGlobe } from "react-icons/fc";
@@ -212,8 +211,10 @@ const SignUp = () => {
 
           <Grid container justifyContent="flex-end" sx={{ mb: 2 }}>
             <Grid item>
-              <Link href="/" variant="body2">
+              <Link to="/">
+                <Typography variant="body2">
                 Already have an account? Sign in
+                </Typography> 
               </Link>
             </Grid>
           </Grid>

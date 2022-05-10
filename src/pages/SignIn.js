@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -159,13 +158,17 @@ const SignIn = () => {
 
             <Grid container sx={{ mb: 2 }}>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
+                <Link to="/">
+                  <Typography variant="body2">
+                    Forgot Password?
+                  </Typography> 
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link to="/signup">
+                  <Typography variant="body2">
+                    Don't have an account? Sign Up
+                  </Typography> 
                 </Link>
               </Grid>
             </Grid>

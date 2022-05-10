@@ -8,13 +8,12 @@ import Post from "./Post";
 import { db } from "../../firebase/auth";
 import { 
   collection, 
-  getDocs 
+  getDocs,
 } from "firebase/firestore";
-import { ConstructionOutlined } from "@mui/icons-material";
 
 const PostList = () => {
   const [postDataArray, setPostDataArray] = useState([]);
-
+  
   useEffect(() => {
     let unsubscribed = false;
   
@@ -40,8 +39,12 @@ const PostList = () => {
         {postDataArray.map((postData) => {
           return(
             <Post
+              key={postData.id}
+              pid={postData.id}
+              uid={postData.uid}
               title={postData.title}
               body={postData.body}
+              upvotes={postData.upvotes - postData.downvotes}
             />
           )
         })}

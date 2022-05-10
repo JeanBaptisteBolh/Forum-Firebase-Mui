@@ -10,7 +10,9 @@ import {
   getDocs,
   collection,
   where,
-  addDoc,
+  setDoc,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 
 import {
@@ -47,12 +49,14 @@ const createUserEmailPassword = async (firstname, lastname, email, password) => 
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
-    await addDoc(collection(db, "users"), {
-      uid: user.uid,
+    const docRef = doc(db, "users", user.uid)
+    await setDoc(docRef, {
       firstname: firstname,
       lastname: lastname,
       email: email,
       authProvider: "local",
+      posts: {},
+      comments: {},
     });
   } catch (err) {
     console.error(err);
@@ -90,12 +94,14 @@ const loginGoogle = async () => {
     }
 
     if (docs.docs.length === 0) {
-      await addDoc(collection(db, "users"), {
-        uid: user.uid,
+      const docRef = doc(db, "users", user.uid)
+      await setDoc(docRef, {
         firstname: firstName,
         lastname: lastName,
         email: user.email,
         authProvider: "google",
+        posts: {},
+        comments: {},
       });
     }
   } catch (err) {
@@ -124,7 +130,6 @@ const logout = () => {
   }
 };
 
-
 // Check if user email already exists
 const userEmailExists = async (email) => {
   const q = query(collection(db, "users"), where("email", "==", email));
@@ -133,6 +138,18 @@ const userEmailExists = async (email) => {
     return true;
   } else { 
     return false;
+  }
+}
+
+const getUserDisplayName = async (uid) => {      
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    const name = docSnap.data().firstname + " " + docSnap.data().lastname
+    return name;
+  } else {
+    return "";
   }
 }
 
@@ -145,4 +162,5 @@ export {
   sendPassResetEmail,
   logout,
   userEmailExists,
+  getUserDisplayName,
 }
