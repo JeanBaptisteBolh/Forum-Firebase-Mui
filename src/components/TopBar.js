@@ -8,7 +8,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { FcGlobe } from "react-icons/fc";
 
-import { logout } from "../firebase/auth";
+import { logout } from "../firebase/users";
 
 const TopBar = (props) => {
   const navigate = useNavigate();

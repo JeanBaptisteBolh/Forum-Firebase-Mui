@@ -17,7 +17,7 @@ import Copyright from "../components/Copyright"
 import {
   auth,
   loginEmailPassword,
-} from "../firebase/auth";
+} from "../firebase/users";
 
 const SignIn = () => {
   // Load browser history

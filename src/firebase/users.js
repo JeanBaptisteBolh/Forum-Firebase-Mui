@@ -43,7 +43,6 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
-
 // Create a user using email
 const createUserEmailPassword = async (firstname, lastname, email, password) => {
   try {

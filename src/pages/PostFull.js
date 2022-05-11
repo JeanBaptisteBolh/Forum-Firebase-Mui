@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
 
 import TopBar from "../components/TopBar"
 
@@ -21,7 +22,6 @@ const PostFull = () => {
       } catch(err) {
         console.error(err);
       }
-      
     }
     getData(id);
 
@@ -38,8 +38,9 @@ const PostFull = () => {
           padding: 1,
           mx:2,
         }}>
-        <h1>{post.title}</h1>
-        <p>{post.body}</p>
+        {/*<Typography variant="p" noWrap>{displayName}</Typography>*/}
+        <Typography variant="h5">{post.title}</Typography>
+        <Typography variant="p">{post.body}</Typography>
       </Card>
     </div>
   ) : (

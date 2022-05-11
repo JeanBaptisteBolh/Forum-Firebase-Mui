@@ -22,7 +22,7 @@ import {
   auth,
   createUserEmailPassword,
   userEmailExists,
-} from "../firebase/auth";
+} from "../firebase/users";
 
 const SignUp = () => {
   // Load browser history

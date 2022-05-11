@@ -1,6 +1,6 @@
 import { GoogleLoginButton, FacebookLoginButton } from "react-social-login-buttons";
 // Firebase imports
-import { loginGoogle } from "../firebase/auth";
+import { loginGoogle } from "../firebase/users";
 
 const SocialLoginButtons = () => {
   return (

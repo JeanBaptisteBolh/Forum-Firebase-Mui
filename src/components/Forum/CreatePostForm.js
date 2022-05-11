@@ -10,7 +10,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-import { auth } from "../../firebase/auth";
+import { auth } from "../../firebase/users";
 import { createPost } from "../../firebase/forum";
 
 import TopBar from "../TopBar";

@@ -3,38 +3,32 @@ import { useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
-import Post from "./Post";
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { db } from "../../firebase/auth";
-import { 
-  collection, 
-  getDocs,
-} from "firebase/firestore";
+import Post from "./Post";
+import { getAllPosts } from "../../firebase/forum";
 
 const PostList = () => {
   const [postDataArray, setPostDataArray] = useState([]);
-  
-  useEffect(() => {
-    let unsubscribed = false;
-  
-    getDocs(collection(db, "posts"))
-      .then((querySnapshot) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-        const newPostDataArray = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {  
+    const getPostDataArray = async () => {
+      try {
+        const newPostDataArray = await getAllPosts().catch(console.error);
         setPostDataArray(newPostDataArray);
-      })
-      .catch((err) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-  
-        // TODO: Handle errors
-        console.error("Failed to retrieve data", err);
-      });
-  
-    return () => unsubscribed  = true;
+        setLoading(false);
+      } catch(err) {
+        console.error(err);
+      }
+    }
+    
+    getPostDataArray();
   }, []);
 
   return (
     <Box>
+
       <Stack spacing={2} sx={{ mx:2 }}>
         {postDataArray.map((postData) => {
           return(
