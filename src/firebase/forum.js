@@ -6,11 +6,12 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  increment,
 } from "firebase/firestore";
 
 import { auth, db } from "./users";
 
-// Create a forum post
+// Create a new forum post
 const createPost = async (title, body) => {
   const user = auth.currentUser;
   //TODO: Check to make sure the user hasn't posted for 10 minutes.
@@ -32,7 +33,7 @@ const createPost = async (title, body) => {
   }
 };
 
-// Get and return an array of all posts
+// Get and return an array of all forum posts
 const getAllPosts = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "posts"));
@@ -47,7 +48,11 @@ const getAllPosts = async () => {
   }
 };
 
-// Get data for a single post
+/**
+ * Get data for a single post
+ * @param {string} pid the post's id
+ * @return {object} a post's data object
+ */
 const getPostData = async (pid) => {
   const docRef = doc(db, "posts", pid);
   const docSnap = await getDoc(docRef);
@@ -59,7 +64,10 @@ const getPostData = async (pid) => {
   }
 };
 
-// Get a users vote for a post
+/**
+ * Get a users vote for a post
+ * @param {string} pid the post's id
+ */
 const getUserVoteForPost = async (pid) => {
   const uid = auth.currentUser.uid;
 
@@ -71,13 +79,11 @@ const getUserVoteForPost = async (pid) => {
     // If the user exists, attempt to get their post votes object
     if (docSnap.exists()) {
       const allUserPostVotes = docSnap.data().postvotes;
-
       // If this is undefined, then the user has never voted on any post
       if (allUserPostVotes === 'undefined') return;
       
       // Otherwise get the vote for the id
-      console.log("All post votes: " + allUserPostVotes);
-      const userVoteForPost = allUserPostVotes.pid;
+      const userVoteForPost = allUserPostVotes[pid];
       return userVoteForPost;
     } else {
       console.log("not found");
@@ -87,8 +93,6 @@ const getUserVoteForPost = async (pid) => {
   }
 
   return;
-
-  
 }
 
 /**
@@ -96,7 +100,8 @@ const getUserVoteForPost = async (pid) => {
  * @param {string} pid the post's id
  * @param {true, false or null} vote value to be saved for the vote ()
  */
-const updateVotePost = async (pid, vote) => {
+const updateUserVoteForPost = async (pid, vote) => {
+  /************** FIRST UPDATE USER'S UPVOTES/DOWNVOTES **************/
   const uid = auth.currentUser.uid;
   const docRef = doc(db, "users", uid);
 
@@ -109,10 +114,65 @@ const updateVotePost = async (pid, vote) => {
   await updateDoc(docRef, voteUpdate);
 }
 
+/**
+ * Get a posts score by subtracting the downvotes from the upvotes
+ * @param {string} pid the post's id
+ * @return {number} the score of the post
+ */
+const getPostScore = async (pid) => {
+  try {
+    const postData = await getPostData(pid);
+    const postScore = postData.upvotes - postData.downvotes;
+    return postScore;
+  } catch (err) {
+    console.log(err);
+    return;
+  }
+}
+
+/** 
+ * Update the upvotes/downvotes fields on a post
+ * @param {string} pid the post's id
+ * @param {true, false or null} previousVote the user's previous vote
+ * @param {true, false or null} newVote the user's new vote
+ */
+const updatePostScore = async (pid, previousVote, newVote) => {
+  const docRef = doc(db, "posts", pid);
+  
+  let updateDict = {};
+
+  if (previousVote == null) {
+    if (newVote === true) {
+      updateDict = { upvotes: increment(1) }
+    } 
+    else if (newVote === false) {
+      updateDict = { downvotes: increment(1) }
+    }
+  }
+
+  else if (previousVote === true) {
+    updateDict = { upvotes: increment(-1) }
+    if (newVote === false) {
+      updateDict["downvotes"] = increment(1);
+    }
+  }
+
+  else if (previousVote === false) {
+    updateDict = { downvotes: increment(-1) }
+    if (newVote === true) {
+      updateDict["upvotes"] = increment(1);
+    }    
+  }
+
+  await updateDoc(docRef, updateDict);
+}
+
 export { 
   createPost, 
   getAllPosts, 
   getPostData,
-  updateVotePost,
   getUserVoteForPost,
+  updateUserVoteForPost,
+  getPostScore,
+  updatePostScore,
 };
