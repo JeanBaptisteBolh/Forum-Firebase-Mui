@@ -36,21 +36,23 @@ const VoteOnPost = (props) => {
     // Check if user has upvoted post already
     const userVoteForPost = await getUserVoteForPost(props.pid);
 
-    console.log(userVoteForPost)
     // If userVoteForPost is undefined, null or false, the user can upvote the post
     if (userVoteForPost == null || userVoteForPost === false ) {
-      updateUserVoteForPost(props.pid, true);
-      updatePostScore(props.pid, userVoteForPost, true);
+      await updateUserVoteForPost(props.pid, true);
+      await updatePostScore(props.pid, userVoteForPost, true);
       toggleDownvote(false);
       toggleUpvote(true);
 
     // Otherwise the user has already upvoted the post so we should undo their upvote
     } else {
       console.log("Voting null");
-      updateUserVoteForPost(props.pid, null);
-      updatePostScore(props.pid, userVoteForPost, null);
+      await updateUserVoteForPost(props.pid, null);
+      await updatePostScore(props.pid, userVoteForPost, null);
       toggleUpvote(false);
     }
+
+    const postScore = await getPostScore(props.pid);
+    setVotes(postScore);
 
   };
 
@@ -58,20 +60,22 @@ const VoteOnPost = (props) => {
     //Check if user has downvoted the post already
     const userVoteForPost = await getUserVoteForPost(props.pid);
 
-    console.log(userVoteForPost)
     // If userVoteForPost is undefined, null or true, the user can downvote the post
     if (userVoteForPost == null || userVoteForPost === true ) {
-      updateUserVoteForPost(props.pid, false);
-      updatePostScore(props.pid, userVoteForPost, false);
+      await updateUserVoteForPost(props.pid, false);
+      await updatePostScore(props.pid, userVoteForPost, false);
       toggleUpvote(false);
       toggleDownvote(true);
     
       // Otherwise the user has already upvoted the post so we should undo their upvote
     } else {
-      updateUserVoteForPost(props.pid, null);
-      updatePostScore(props.pid, userVoteForPost, null);
+      await updateUserVoteForPost(props.pid, null);
+      await updatePostScore(props.pid, userVoteForPost, null);
       toggleDownvote(false);
     }
+
+    const postScore = await getPostScore(props.pid);
+    setVotes(postScore);
   };
 
   useEffect(() => {
@@ -79,6 +83,7 @@ const VoteOnPost = (props) => {
     const getVotes = async () => {
       const postScore = await getPostScore(props.pid);
       setVotes(postScore);
+      console.log(postScore)
     }
 
     // Get the user's vote for the post
@@ -99,7 +104,7 @@ const VoteOnPost = (props) => {
     getUsersVote();
     getVotes();
 
-  });
+  }, []);
 
   return (
     <Stack alignItems="center">
