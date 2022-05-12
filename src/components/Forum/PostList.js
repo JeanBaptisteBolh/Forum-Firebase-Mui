@@ -28,7 +28,6 @@ const PostList = () => {
 
   return (
     <Box>
-
       <Stack spacing={2} sx={{ mx:2 }}>
         {postDataArray.map((postData) => {
           return(

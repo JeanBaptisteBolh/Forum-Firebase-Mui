@@ -40,7 +40,6 @@ const Post = (props) => {
           <Grid item sx={{ backgroundColor: grey[200], padding: 1}}>
             <VoteOnPost 
               pid={props.pid}
-              upvotes={props.upvotes}
             />
           </Grid>
 
@@ -63,7 +62,6 @@ const Post = (props) => {
               </Typography>
             </Link>
           </Grid>
-
 
         </Grid>
         
