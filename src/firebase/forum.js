@@ -1,17 +1,27 @@
+import { create } from "@mui/material/styles/createTransitions";
 import {
   collection,
   addDoc,
+  setDoc,
   serverTimestamp,
   doc,
   getDoc,
   getDocs,
   updateDoc,
   increment,
+  query,
+  where,
+  FieldValue,
 } from "firebase/firestore";
 
 import { auth, db } from "./users";
 
-// Create a new forum post
+/**
+ * Create a new forum post
+ * @param {string} title the post's title
+ * @param {string} body the post's body
+ * @return {boolean} true if successful, false otherwise
+ */
 const createPost = async (title, body) => {
   const user = auth.currentUser;
   //TODO: Check to make sure the user hasn't posted for 10 minutes.
@@ -33,7 +43,34 @@ const createPost = async (title, body) => {
   }
 };
 
-// Get and return an array of all forum posts
+/**
+ * Create a new forum comment.
+ * @param {string} body the comment's body
+ * @return {boolean} true if successful, false otherwise
+ */
+const createComment = async (body) => {  
+  // Create a new comment
+  const newCommentRef = doc(collection(db, "comments"));
+  try {
+    const res = await setDoc(newCommentRef, {
+      uid: auth.currentUser.uid,
+      created: serverTimestamp(),
+      body: body,
+      upvotes: 0,
+      downvotes: 0,
+      //comments: {}, This is maybe useless.
+    });
+    return newCommentRef.id;
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+}
+
+/**
+ * Get and return an array of all forum posts
+ * @return {array} An array of all forum posts
+ */
 const getAllPosts = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "posts"));
@@ -47,6 +84,34 @@ const getAllPosts = async () => {
     return;
   }
 };
+
+/**
+ * Get and return an object containing the comments for a post
+ * @param {number} pid A post id
+ * @return {array} comments for the post
+ */
+const getCommentIdsForPost = async (pid) => {
+  // TODO: Optimize this so we don't make 3 million calls.
+  const postData = await getPostData(pid);
+
+  if (postData !== undefined) {
+    
+    const commentIds = Object.keys(postData.comments);
+    
+    return commentIds;
+    // if (commentIds.length > 0) {
+    //   let comments = []
+
+    //   commentIds.forEach(async (commentId) => {
+    //     const commentData = await getCommentData(commentId);
+    //     comments.push(commentData);
+    //   });
+
+    //   return comments;
+    // }
+  }
+  return;
+}
 
 /**
  * Get data for a single post
@@ -65,10 +130,27 @@ const getPostData = async (pid) => {
 };
 
 /**
- * Get a users vote for a post
- * @param {string} pid the post's id
+ * Get data for a single comment
+ * @param {string} cid the comment's id
+ * @return {object} a comment's data object
  */
-const getUserVoteForPost = async (pid) => {
+ const getCommentData = async (cid) => {
+  const docRef = doc(db, "comments", cid);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    return;
+  }
+};
+
+/**
+ * Get a users vote for a post
+ * @param {string} id the post's id
+ * @param {boolean} isPost True for posts, false for comments
+ */
+const getUserVote = async (id, isPost) => {
   const uid = auth.currentUser.uid;
 
   // Attempt to get the users info from firestore
@@ -78,15 +160,23 @@ const getUserVoteForPost = async (pid) => {
     
     // If the user exists, attempt to get their post votes object
     if (docSnap.exists()) {
-      const allUserPostVotes = docSnap.data().postvotes;
+      
+      let userVotes;
+      // Get either postvotes or commentvotes
+      if (isPost) {
+        userVotes = docSnap.data().postvotes;
+      } else {
+        userVotes = docSnap.data().commentvotes;
+      }
+      
       // If this is undefined, then the user has never voted on any post
-      if (allUserPostVotes === 'undefined') return;
+      if (userVotes === undefined) return;
       
       // Otherwise get the vote for the id
-      const userVoteForPost = allUserPostVotes[pid];
-      return userVoteForPost;
+      const userVote = userVotes[id];
+      return userVote;
     } else {
-      console.log("not found");
+      console.error("User not found in getUserVote");
     }
   } catch (err) {
     console.error(err)
@@ -97,10 +187,11 @@ const getUserVoteForPost = async (pid) => {
 
 /**
  * Upvote the logged in user's vote on a post
- * @param {string} pid the post's id
+ * @param {string} id the post's id
  * @param {true, false or null} vote value to be saved for the vote ()
+ * @param {boolean} isPost True for posts, false for comments
  */
-const updateUserVoteForPost = async (pid, vote) => {
+const updateUserVote = async (id, vote, isPost) => {
   /************** FIRST UPDATE USER'S UPVOTES/DOWNVOTES **************/
   const uid = auth.currentUser.uid;
   const docRef = doc(db, "users", uid);
@@ -108,7 +199,11 @@ const updateUserVoteForPost = async (pid, vote) => {
   // This weird trick is necessary because our post vote key names are dynamic
   // https://stackoverflow.com/questions/47295541/cloud-firestore-update-fields-in-nested-objects-with-dynamic-key
   var voteUpdate = {};
-  voteUpdate[`postvotes.${pid}`] = vote;
+  if (isPost) {
+    voteUpdate[`postvotes.${id}`] = vote;
+  } else {
+    voteUpdate[`commentvotes.${id}`] = vote;
+  }
 
   // Update the user's post vote for the post pid
   await updateDoc(docRef, voteUpdate);
@@ -125,19 +220,41 @@ const getPostScore = async (pid) => {
     const postScore = postData.upvotes - postData.downvotes;
     return postScore;
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    return;
+  }
+}
+
+/**
+ * Get a comments score by subtracting the downvotes from the upvotes
+ * @param {string} cid the comment's id
+ * @return {number} the score of the post
+ */
+ const getCommentScore = async (cid) => {
+  try {
+    const commentData = await getCommentData(cid);
+    const commentScore = commentData.upvotes - commentData.downvotes;
+    return commentScore;
+  } catch (err) {
+    console.error(err);
     return;
   }
 }
 
 /** 
  * Update the upvotes/downvotes fields on a post
- * @param {string} pid the post's id
+ * @param {string} id the post's/comment's id
  * @param {true, false or null} previousVote the user's previous vote
  * @param {true, false or null} newVote the user's new vote
+ * @param {boolean} isPost True for posts, false for comments
  */
-const updatePostScore = async (pid, previousVote, newVote) => {
-  const docRef = doc(db, "posts", pid);
+const updateScore = async (id, previousVote, newVote, isPost) => {
+  let docRef;
+  if (isPost) {
+    docRef = doc(db, "posts", id);
+  } else {
+    docRef = doc(db, "comments", id);
+  }
   
   let updateDict = {};
 
@@ -167,12 +284,59 @@ const updatePostScore = async (pid, previousVote, newVote) => {
   await updateDoc(docRef, updateDict);
 }
 
+
+const commentOnPost = async (pid, comment) => {
+  const newCommentId = await createComment(comment);
+
+  if (newCommentId == undefined) {
+    console.error("No new Comment Id, probably an error in the creation of the comment")
+    return;
+  } else {
+    // Add the comment id to the posts dictionary of comments
+    const postDocRef = doc(db, "posts", pid);
+    var updateDict = {};
+    updateDict[`comments.${newCommentId}`] = true;
+    try {
+      const res = await updateDoc(postDocRef, updateDict);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+const commentOnComment = async (cid, comment) => {
+  const newCommentId = await createComment(comment);
+
+  if (newCommentId == undefined) {
+    console.error("No new Comment Id, probably an error in the creation of the comment")
+    return;
+  } else {
+    // Add the comment id to the comments dictionary of comments
+    const commentDocRef = doc(db, "comments", cid);
+    var updateDict = {};
+    updateDict[`comments.${newCommentId}`] = true;
+    try {
+      const res = await updateDoc(commentDocRef, updateDict);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+
+
 export { 
   createPost, 
+  createComment,
   getAllPosts, 
+  getCommentIdsForPost,
   getPostData,
-  getUserVoteForPost,
-  updateUserVoteForPost,
+  getCommentData,
+  getUserVote,
+  updateUserVote,
   getPostScore,
-  updatePostScore,
+  getCommentScore,
+  updateScore,
+  commentOnPost,
+  commentOnComment,
 };

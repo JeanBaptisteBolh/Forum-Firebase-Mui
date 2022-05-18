@@ -9,13 +9,13 @@ import {
   updateUserVote, 
   getUserVote,
   updateScore,
-  getPostScore,
+  getCommentScore,
 } from "../../firebase/forum";
 
 import { orange, blue } from '@mui/material/colors';
 
 
-const VoteOnPost = (props) => {
+const VoteOnComment = (props) => {
 
   // Upvote/downvote button color toggles
   const [upvote, toggleUpvote] = useState(false);
@@ -34,59 +34,59 @@ const VoteOnPost = (props) => {
 
   const handleUpvote = async (e) => {
     // Check if user has upvoted post already
-    const userVoteForPost = await getUserVote(props.pid, true);
+    const userVoteForComment = await getUserVote(props.cid, false);
 
     // If userVoteForPost is undefined, null or false, the user can upvote the post
-    if (userVoteForPost == null || userVoteForPost === false ) {
-      await updateUserVote(props.pid, true, true);
-      await updateScore(props.pid, userVoteForPost, true, true);
+    if (userVoteForComment == null || userVoteForComment === false ) {
+      await updateUserVote(props.cid, true, false);
+      await updateScore(props.cid, userVoteForComment, true, false);
       toggleDownvote(false);
       toggleUpvote(true);
 
     // Otherwise the user has already upvoted the post so we should undo their upvote
     } else {
-      await updateUserVote(props.pid, null, true);
-      await updateScore(props.pid, userVoteForPost, null, true);
+      await updateUserVote(props.cid, null, false);
+      await updateScore(props.cid, userVoteForComment, null, false);
       toggleUpvote(false);
     }
 
-    const postScore = await getPostScore(props.pid);
-    setVotes(postScore);
+    const commentScore = await getCommentScore(props.cid);
+    setVotes(commentScore);
 
   };
 
   const handleDownvote = async (e) => {
     //Check if user has downvoted the post already
-    const userVoteForPost = await getUserVote(props.pid, true);
+    const userVoteForComment = await getUserVote(props.cid, false);
 
     // If userVoteForPost is undefined, null or true, the user can downvote the post
-    if (userVoteForPost == null || userVoteForPost === true ) {
-      await updateUserVote(props.pid, false, true);
-      await updateScore(props.pid, userVoteForPost, false, true);
+    if (userVoteForComment == null || userVoteForComment === true ) {
+      await updateUserVote(props.cid, false, false);
+      await updateScore(props.cid, userVoteForComment, false, false);
       toggleUpvote(false);
       toggleDownvote(true);
     
       // Otherwise the user has already upvoted the post so we should undo their upvote
     } else {
-      await updateUserVote(props.pid, null, true);
-      await updateScore(props.pid, userVoteForPost, null, true);
+      await updateUserVote(props.cid, null, false);
+      await updateScore(props.cid, userVoteForComment, null, false);
       toggleDownvote(false);
     }
 
-    const postScore = await getPostScore(props.pid);
-    setVotes(postScore);
+    const commentScore = await getCommentScore(props.cid);
+    setVotes(commentScore);
   };
 
   useEffect(() => {
     // Get the number of votes on the post
     const getVotes = async () => {
-      const postScore = await getPostScore(props.pid);
-      setVotes(postScore);
+      const commentScore = await getCommentScore(props.cid);
+      setVotes(commentScore);
     }
 
     // Get the user's vote for the post
     const getUsersVote = async () => {
-      const userVote = await getUserVote(props.pid, true);
+      const userVote = await getUserVote(props.cid, false);
       if (userVote === true) {
         toggleUpvote(true);
         toggleDownvote(false);
@@ -115,4 +115,4 @@ const VoteOnPost = (props) => {
   );
 };
 
-export default VoteOnPost;
+export default VoteOnComment;

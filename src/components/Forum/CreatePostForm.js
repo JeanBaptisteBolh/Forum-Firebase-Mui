@@ -40,7 +40,6 @@ const CreatePostForm = () => {
   const onSubmit = async (data) => {
     // TODO: Check if user has posted in the last 10 minutes
     // const hasPosted = await hasUserPostedRecently()
-    console.log("Triggered");
     const result = await createPost(data.title, data.body);
     if (!result) {
       setPostSuccessMsg("Error creating post");

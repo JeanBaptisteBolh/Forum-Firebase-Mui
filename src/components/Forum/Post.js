@@ -46,10 +46,10 @@ const Post = (props) => {
           {/* Post Title/Body Box */}
           <Grid item sx={{ padding: 1 }}>
             <Link to={`/post/${props.pid}`} style={{ textDecoration: 'none' }}>
-              <Typography variant="p" noWrap>{displayName}</Typography>
-              <Typography variant="h5">{props.title}</Typography>
+              <Typography variant="body2" noWrap>{displayName}</Typography>
+              <Typography variant="h6">{props.title}</Typography>
               <Typography
-                variant="p"
+                variant="body2"
                 sx={{
                   overflow: "hidden",
                   textOverflow: "ellipsis",

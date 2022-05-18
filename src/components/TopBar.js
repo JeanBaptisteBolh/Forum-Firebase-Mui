@@ -77,7 +77,6 @@ const TopBar = (props) => {
         
         { !props.posting && 
           <Button variant="outlined" color="inherit" onClick={() => {
-            console.log("Navigating")
             navigate("/create-post")
           }}>
             Post

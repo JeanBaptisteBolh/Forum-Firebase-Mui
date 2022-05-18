@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import CircularProgress from "@mui/material/CircularProgress";
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import { grey } from "@mui/material/colors";
+import { CircularProgress, Card, Grid, Typography, Box } from "@mui/material";
 
 import TopBar from "../components/TopBar";
 import VoteOnPost from "../components/Forum/VoteOnPost"
+import CommentList from "../components/Forum/CommentList"
+import CreateCommentForm from "../components/Forum/CreateCommentForm"
 
 import { getPostData } from "../firebase/forum";
 import { auth, getUserDisplayName } from "../firebase/users";
@@ -66,9 +64,12 @@ const PostFull = () => {
           mx: 2,
         }}
       >
+        {/* Contains the post info */}
         <Grid container wrap="nowrap">
           {/* Upvote/Downvote Box */}
-          <Grid item sx={{ backgroundColor: grey[200], padding: 1}}>
+          <Grid item sx={{ 
+            padding: 1
+          }}>
             <VoteOnPost 
               pid={id}
             />
@@ -76,11 +77,19 @@ const PostFull = () => {
 
           {/* Post Title/Body Box */}
           <Grid item sx={{ padding: 1 }}>
-            <Typography variant="p" noWrap>{displayName}</Typography>
-            <Typography variant="h5">{post.title}</Typography>
-            <Typography variant="p">{post.body}</Typography>
+            <Typography variant="body2" noWrap>{displayName}</Typography>
+            <Typography variant="h6">{post.title}</Typography>
+            <Typography variant="body2">{post.body}</Typography>
           </Grid>
         </Grid>
+        
+        {/* Form to leave a comment */}
+        <Box sx={{ mx: 2, my: 1 }}>
+          <CreateCommentForm parentId={id} commentIsForPost={true}/>
+        </Box>
+
+        {/* Comment List */}
+        <CommentList pid={id}/>
       </Card>
     </div>
   ) : (
