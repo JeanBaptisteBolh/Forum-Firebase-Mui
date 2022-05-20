@@ -9,7 +9,7 @@ import VoteOnPost from "../components/Forum/VoteOnPost"
 import CommentList from "../components/Forum/CommentList"
 import CreateCommentForm from "../components/Forum/CreateCommentForm"
 
-import { getPostData } from "../firebase/forum";
+import { getPostData, getCommentsObject } from "../firebase/forum";
 import { auth, getUserDisplayName } from "../firebase/users";
 
 const PostFull = () => {
@@ -24,6 +24,8 @@ const PostFull = () => {
   useEffect(() => {
     const getData = async (pid) => {
       try {
+        const commentChildrenData = await getCommentsObject(pid);
+        console.log("COMMENT CHILDREN DATA \n" + JSON.stringify(commentChildrenData));
         const postData = await getPostData(pid).catch(console.error);
         const userDisplayName = await getUserDisplayName(postData.uid);
         setPost(postData);

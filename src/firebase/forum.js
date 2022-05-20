@@ -317,6 +317,59 @@ const commentOnComment = async (cid, comment) => {
   }
 }
 
+/** 
+ * Get an  object containing all comments and information about their children for the post
+ * @param {string} pid the post id
+ * @return {object} Object containing info about comments.  Looks like this:
+ * children = {
+ *   n0v91kfl: {
+ *     depth: 0,
+ *     children: {
+ *       aksldc923: {
+ *         depth: 1,
+ *         children: {}
+ *       }
+ *     }
+ *   }
+ * }
+ */
+const getCommentsObject = async (pid) => {
+
+  const getChildComments = async (id, depth) => {
+    const commentRef = doc(db, "comments", id);
+    const commentSnap = await getDoc(commentRef);
+  
+    let commentData = {};
+    if ('comments' in commentSnap.data()) {
+      const childrenComments = commentSnap.data().comments;
+      for (const [key, value] of Object.entries(childrenComments)) {
+        commentData[key] = await getChildComments(key, depth + 1);
+      }
+      return commentData;
+
+    } else {
+      return { 
+        depth: depth,
+        children: {}
+      };
+    }
+  }
+
+  // Get the data for the post
+  const postData = await getPostData(pid);
+
+  let commentData = {};
+  // If there are comments for the post, dive through them recursively obtaining info
+  // about each comment and their children comments
+  if ('comments' in postData) {
+    for (const [key, value] of Object.entries(postData.comments)) {
+      commentData[key] = await getChildComments(key, 0);
+    }
+  }
+  return commentData;
+}
+
+
 
 
 export { 
@@ -333,4 +386,5 @@ export {
   updateScore,
   commentOnPost,
   commentOnComment,
+  getCommentsObject,
 };

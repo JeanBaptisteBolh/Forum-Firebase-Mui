@@ -28,7 +28,7 @@ const CommentList = (props) => {
     <Stack>
       {commentIdArray.map((cid) => {
         return (
-          <Comment cid={cid} />
+          <Comment key={cid} cid={cid} />
         );
       })}
     </Stack>
