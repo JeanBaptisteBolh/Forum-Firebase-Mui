@@ -96,19 +96,13 @@ const getCommentIdsForPost = async (pid) => {
 
   if (postData !== undefined) {
     
-    const commentIds = Object.keys(postData.comments);
-    
-    return commentIds;
-    // if (commentIds.length > 0) {
-    //   let comments = []
+    if ('comments' in postData) {
+      const commentIds = Object.keys(postData.comments);
+      return commentIds;
+    } else {
+      return [];
+    }
 
-    //   commentIds.forEach(async (commentId) => {
-    //     const commentData = await getCommentData(commentId);
-    //     comments.push(commentData);
-    //   });
-
-    //   return comments;
-    // }
   }
   return;
 }

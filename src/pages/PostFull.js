@@ -25,21 +25,17 @@ const PostFull = () => {
     const getData = async (pid) => {
       try {
         const postData = await getPostData(pid).catch(console.error);
+        const userDisplayName = await getUserDisplayName(postData.uid);
         setPost(postData);
+        setDisplayName(userDisplayName);
         setPostLoading(false);
       } catch (err) {
         console.error(err);
       }
     };
-    const getDisplayName = async (uid) => {
-      const userDisplayName = await getUserDisplayName(uid).catch(
-        console.error
-      );
-      setDisplayName(userDisplayName);
-    };
 
-    getDisplayName(auth.currentUser.uid);
     getData(id);
+
   }, []);
 
   useEffect(() => {

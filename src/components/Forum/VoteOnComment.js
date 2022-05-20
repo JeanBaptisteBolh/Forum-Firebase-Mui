@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Typography from "@mui/material/Typography";
@@ -105,13 +105,13 @@ const VoteOnComment = (props) => {
   }, []);
 
   return (
-    <Stack alignItems="center">
+    <Box style={{ display: "flex", gap: "0.25rem" }}>
       <KeyboardArrowUpIcon onClick={handleUpvote} style={voteStyles.upvotevotecolor}/>
-        <Typography variant="body2" noWrap>
-          {votes}
-        </Typography>
+      <Typography variant="body2" noWrap>
+        {votes}
+      </Typography>
       <KeyboardArrowDownIcon onClick={handleDownvote} style={voteStyles.downvotecolor}/>
-    </Stack>
+    </Box>
   );
 };
 

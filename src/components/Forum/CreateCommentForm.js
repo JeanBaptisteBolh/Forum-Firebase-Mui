@@ -26,6 +26,7 @@ const CreateCommentForm = (props) => {
     if (props.commentIsForPost) {
       result = await commentOnPost(props.parentId, data.comment);
     } else {
+      console.log("doing it")
       result = await commentOnComment(props.parentId, data.comment);
     }
 

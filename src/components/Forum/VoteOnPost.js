@@ -107,9 +107,7 @@ const VoteOnPost = (props) => {
   return (
     <Stack alignItems="center">
       <KeyboardArrowUpIcon onClick={handleUpvote} style={voteStyles.upvotevotecolor}/>
-        <Typography variant="body2" noWrap>
-          {votes}
-        </Typography>
+      <Typography variant="body2" noWrap>{votes}</Typography>
       <KeyboardArrowDownIcon onClick={handleDownvote} style={voteStyles.downvotecolor}/>
     </Stack>
   );
