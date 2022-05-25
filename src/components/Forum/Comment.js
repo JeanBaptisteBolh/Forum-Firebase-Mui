@@ -57,9 +57,26 @@ const Comment = (props) => {
         </Box>
       }
       
-      
-      
+    { (props.children.length !== 0) &&
+      props.children.map(comment => {
+        console.log(comment)
+        return (
+          <Comment 
+            key={comment.cid}
+            cid={comment.cid}
+            created={comment.created}
+            depth={comment.depth}
+            children={comment.children}
+          />
+        )
+      })
+
+    }
+
+
     </Box>
+
+
   );
 };
 

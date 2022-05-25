@@ -1,36 +1,43 @@
 import { useState, useEffect } from "react";
 
-import { Divider, Box } from "@material-ui/core";
-import { getCommentIdsForPost } from "../../firebase/forum";
+import { getCommentsArr } from "../../firebase/forum";
 import Comment from "./Comment";
 import { Stack } from "@mui/material";
 
 const CommentList = (props) => {
-  const [commentIdArray, setCommentIdArray] = useState([]);
+  const [commentDataArr, setCommentDataArr] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getCommentIdArray = async (pid) => {
+    const getCommentData = async (pid) => {
       try {
         // Get the comments object for the post
-        const commentIds = await getCommentIdsForPost(pid);
-        setCommentIdArray(commentIds);
+        const commentsArr = await getCommentsArr(pid);
+        setCommentDataArr(commentsArr);
         setLoading(false);
       } catch (err) {
         console.error(err);
       }
     };
 
-    getCommentIdArray(props.pid);
+    getCommentData(props.pid);
   }, []);
 
   return (
     <Stack>
-      {commentIdArray.map((cid) => {
-        return (
-          <Comment key={cid} cid={cid} />
-        );
-      })}
+      {
+        commentDataArr.map(comment => {
+          return (
+            <Comment 
+              key={comment.cid}
+              cid={comment.cid}
+              created={comment.created}
+              depth={comment.depth}
+              children={comment.children}
+            />
+          );
+        })
+      }
     </Stack>
   );
 };
