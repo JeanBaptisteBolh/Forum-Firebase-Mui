@@ -24,12 +24,14 @@ const CommentList = (props) => {
   }, []);
 
   return (
-    <Stack>
+    <Stack sx={{ ml: 1, mb: 2 }}>
       {
         commentDataArr.map(comment => {
           return (
             <Comment 
               key={comment.cid}
+              commentIsForPost={true}
+              parentId={props.pid}
               cid={comment.cid}
               created={comment.created}
               depth={comment.depth}

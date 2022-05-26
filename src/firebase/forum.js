@@ -8,10 +8,8 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  deleteDoc,
   increment,
-  query,
-  where,
-  FieldValue,
 } from "firebase/firestore";
 
 import { auth, db } from "./users";
@@ -26,8 +24,11 @@ const createPost = async (title, body) => {
   const user = auth.currentUser;
   //TODO: Check to make sure the user hasn't posted for 10 minutes.
 
+  // Create a new comment
+  const newPostRef = doc(collection(db, "posts"));
+
   try {
-    const res = await addDoc(collection(db, "posts"), {
+    const res = await setDoc(newPostRef, {
       uid: user.uid,
       created: serverTimestamp(),
       title: title,
@@ -36,12 +37,45 @@ const createPost = async (title, body) => {
       downvotes: 0,
       //comments: {}, This is maybe useless.
     });
-    return true;
+    return newPostRef.id;
   } catch (err) {
-    console.error(err);
-    return false;
+    return;
   }
 };
+
+const deletePost = async (pid) => {
+  const deleteComments = async (cid) => {
+    // Get the comment data
+    const commentData = await getCommentData(cid)
+
+    // If there are child comments, delete them.
+    if (commentData.comments != null) {
+      for (const [key, value] of Object.entries(commentData.comments)) {
+          console.log(key);
+          await deleteComments(key);
+      }
+    }
+    // Once done, delete the comment
+    const commentRef = doc(db, "comments", cid);  
+    await deleteDoc(commentRef);
+  }
+
+  // Get post data
+  const postData = await getPostData(pid);
+  
+  // If there are comments, delete them.
+  if (postData.comments != null) {
+    // Recursively remove children from each comment
+    for (const [key, value] of Object.entries(postData.comments)) {
+      await deleteComments(key);
+    }
+  }
+
+  // Once done, delete the post
+  const postRef = doc(db, "posts", pid);  
+  await deleteDoc(postRef);
+
+}
 
 /**
  * Create a new forum comment.
@@ -58,13 +92,25 @@ const createComment = async (body) => {
       body: body,
       upvotes: 0,
       downvotes: 0,
-      //comments: {}, This is maybe useless.
+      deleted: false,
     });
     return newCommentRef.id;
   } catch (err) {
     console.error(err);
     return;
   }
+}
+
+const deleteCommentInLiveThread = async (cid) => {
+  const commentRef = doc(db, "comments", cid);  
+
+  // We show the comment as "delete" in the thread, so that the children remain.
+  const commentUpdate = {
+    body: "",
+    deleted: true
+  };
+
+  await updateDoc(commentRef, commentUpdate);
 }
 
 /**
@@ -292,8 +338,12 @@ const commentOnPost = async (pid, comment) => {
     updateDict[`comments.${newCommentId}`] = true;
     try {
       const res = await updateDoc(postDocRef, updateDict);
+      // Get new comment data and return
+      const newCommentData = await getCommentData(newCommentId);
+      return [newCommentId, newCommentData];
     } catch (err) {
       console.error(err);
+      return;
     }
   }
 }
@@ -306,13 +356,18 @@ const commentOnComment = async (cid, comment) => {
     return;
   } else {
     // Add the comment id to the comments dictionary of comments
+    console.log(cid);
     const commentDocRef = doc(db, "comments", cid);
     var updateDict = {};
     updateDict[`comments.${newCommentId}`] = true;
     try {
       const res = await updateDoc(commentDocRef, updateDict);
+      // Get new comment data and return
+      const newCommentData = await getCommentData(newCommentId);
+      return [newCommentId, newCommentData];
     } catch (err) {
       console.error(err);
+      return; //Failure
     }
   }
 }
@@ -362,13 +417,14 @@ const getCommentsArr = async (pid) => {
       commentData.push(comment);
     }
   }
-  console.log(commentData)
   return commentData;
 }
 
 export { 
   createPost, 
+  deletePost,
   createComment,
+  deleteCommentInLiveThread,
   getAllPosts, 
   getCommentIdsForPost,
   getPostData,
