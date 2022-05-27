@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import { auth } from "../../firebase/users";
 import { createPost } from "../../firebase/forum";
 
-import TopBar from "../TopBar";
+import TopBar from "../Navigation/TopBar";
 
 const CreatePostForm = () => {
   // Load browser history

@@ -122,6 +122,7 @@ const sendPassResetEmail = async (email) => {
 
 // Logout.  Firebase will know what user is logged in through the auth variable.
 const logout = () => {
+  console.log("logging out");
   try { 
     auth.signOut();
   } catch (err) {

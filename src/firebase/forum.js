@@ -1,7 +1,5 @@
-import { create } from "@mui/material/styles/createTransitions";
 import {
   collection,
-  addDoc,
   setDoc,
   serverTimestamp,
   doc,
@@ -10,6 +8,8 @@ import {
   updateDoc,
   deleteDoc,
   increment,
+  query,
+  where,
 } from "firebase/firestore";
 
 import { auth, db } from "./users";
@@ -129,6 +129,26 @@ const getAllPosts = async () => {
     return;
   }
 };
+
+/**
+ * Get and return an array of a users posts
+ * @return {array} An array of a user's forum posts
+ */
+ const getUserPosts = async (uid) => {
+  try {
+    const q = query(collection(db, "posts"), where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+    const postDataArray = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    return postDataArray;
+  } catch (err) {
+    console.error("Failed to retrieve data", err);
+    return;
+  }
+};
+
 
 /**
  * Get and return an object containing the comments for a post
@@ -425,6 +445,7 @@ export {
   createComment,
   deleteCommentInLiveThread,
   getAllPosts, 
+  getUserPosts,
   getCommentIdsForPost,
   getPostData,
   getCommentData,

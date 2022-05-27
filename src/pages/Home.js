@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/users";
 
-import TopBar from "../components/TopBar"
+import TopBar from "../components/Navigation/TopBar"
 import PostList from "../components/Forum/PostList"
 
 const Home = () => {

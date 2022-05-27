@@ -12,11 +12,12 @@ import {
   Dialog,
 } from "@mui/material";
 
-import TopBar from "../components/TopBar";
+import TopBar from "../components/Navigation/TopBar";
 import VoteOnPost from "../components/Forum/VoteOnPost";
 import CommentList from "../components/Forum/CommentList";
 import CreateCommentForm from "../components/Forum/CreateCommentForm";
 import NewReply from "../components/Forum/NewReply";
+import PostDeleteButton from "../components/Forum/PostDeleteButton";
 
 import { getPostData, deletePost, commentOnPost } from "../firebase/forum";
 import { auth, getUserDisplayName } from "../firebase/users";
@@ -145,16 +146,9 @@ const PostFull = () => {
             </Typography>
             <Typography variant="h6">{post.title}</Typography>
             <Typography variant="body2">{post.body}</Typography>
-            <Button
-              size="small"
-              sx={{ textTransform: "none", p: 0, mt: 1 }}
-              color="error"
-              onClick={() => {
-                showPostDeleteDialogue();
-              }}
-            >
-              Delete post
-            </Button>
+            {userCreatedPost && (
+              <PostDeleteButton pid={id} />
+            )}
           </Grid>
         </Grid>
 
@@ -182,38 +176,8 @@ const PostFull = () => {
 
         {/********** Comment List **********/}
         <CommentList pid={id} />
-      </Card>
 
-      {/********** Post deletion confirmation dialogue **********/}
-      <Dialog open={showDeletionDialogue} onClose={hidePostDeleteDialogue}>
-        <Typography sx={{ m: 2 }}>
-          Are you sure you want to delete this post?
-        </Typography>
-        <Grid
-          container
-          alignItems="right"
-          justifyContent="right"
-          sx={{ mb: 2 }}
-        >
-          <Grid item>
-            <Button
-              sx={{ textTransform: "none", p: 0 }}
-              onClick={hidePostDeleteDialogue}
-            >
-              Close
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              sx={{ textTransform: "none", p: 0 }}
-              color="error"
-              onClick={handlePostDelete}
-            >
-              Delete
-            </Button>
-          </Grid>
-        </Grid>
-      </Dialog>
+      </Card>
     </div>
   ) : (
     <div>

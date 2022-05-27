@@ -1,14 +1,18 @@
 import { useNavigate, Link } from "react-router-dom";
 
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Toolbar from '@mui/material/Toolbar';
-import { styled, alpha } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
+import {
+  Button,
+  Box,
+  Toolbar,
+  InputBase,
+  styled,
+  alpha,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+
 import { FcGlobe } from "react-icons/fc";
 
-import { logout } from "../firebase/users";
+import AccountMenu from "./AccountMenu"
 
 const TopBar = (props) => {
   const navigate = useNavigate();
@@ -53,16 +57,17 @@ const TopBar = (props) => {
       },
     },
   }));
+
   return (
     <Box
       sx={{
         flexGrow: 1,
         backgroundColor: "primary.main",
-        mb: 2
+        mb: 2,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Link to="/home" style={{ textDecoration: 'none' }}>
+        <Link to="/home">
           <FcGlobe size={50} />
         </Link>
         <Search>
@@ -74,18 +79,21 @@ const TopBar = (props) => {
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
-        
-        { !props.posting && 
-          <Button variant="outlined" color="inherit" onClick={() => {
-            navigate("/create-post")
-          }}>
+
+        {!props.posting && (
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => {
+              navigate("/create-post");
+            }}
+          >
             Post
           </Button>
-        }
+        )}
 
-        <Button variant="outlined" color="inherit" onClick={logout}>
-          Logout
-        </Button>
+        <AccountMenu />
+
       </Toolbar>
     </Box>
   );

@@ -1,19 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 
 import { auth } from "../firebase/users";
-import { createPost } from "../firebase/forum";
 
-import TopBar from "../components/TopBar";
+import TopBar from "../components/Navigation/TopBar";
 import CreatePostForm from "../components/Forum/CreatePostForm"
 
 const CreatePost = () => {
