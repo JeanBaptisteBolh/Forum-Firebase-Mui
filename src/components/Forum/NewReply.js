@@ -3,7 +3,7 @@ import VoteOnComment from "./VoteOnComment";
 
 const NewReply = (props) => {
   return (
-    <Box sx={{ mb:1 }}>
+    <Box sx={{ mt:1 }}>
       <Typography variant="body2" sx={{ mb: 1 }}>
         {props.displayName} - 1 minute ago
       </Typography>

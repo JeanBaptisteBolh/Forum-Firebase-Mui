@@ -79,10 +79,17 @@ const Comment = (props) => {
   }, []);
 
   return (
-    <Box sx={{ mb:1 }}>
-      <Typography variant="body2" sx={{ mb: 1 }}>
-        {displayName} - 1 minute ago
-      </Typography>
+    <Box sx={{ mt: 1 }}>
+      {!commentData.deleted && (
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          {displayName} - 1 minute ago
+        </Typography>
+      )}
+      {commentData.deleted && (
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          [deleted] - 1 minute ago
+        </Typography>
+      )}
       <Box
         sx={{
           ml: 1,
@@ -90,19 +97,9 @@ const Comment = (props) => {
           borderLeft: "2px solid lightgrey",
         }}
       >
-        {!commentData.deleted && (
-          <Typography variant="body2" sx={{ mx:1, mb:0.5 }}>
-            {commentData.body}
-          </Typography>
-        )}
-        {commentData.deleted && (
-          <Typography
-            variant="body2"
-            sx={{  mx:1, mb:0.5, fontStyle: "italic" }}
-          >
-            [deleted]
-          </Typography>
-        )}
+        <Typography variant="body2" sx={{ mx: 1, mb: 0.5 }}>
+          {commentData.body}
+        </Typography>
 
         <Box alignItems="center" sx={{ display: "flex" }}>
           <VoteOnComment cid={props.cid} />
@@ -131,7 +128,7 @@ const Comment = (props) => {
 
         {/********** Reply to comment form **********/}
         {showReplyForm && (
-          <Box marginLeft={5}>
+          <Box sx={{ mx: 1, mt: 1 }} >
             <CreateCommentForm onSubmit={onCommentSubmit} />
           </Box>
         )}

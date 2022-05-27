@@ -106,7 +106,6 @@ const deleteCommentInLiveThread = async (cid) => {
 
   // We show the comment as "delete" in the thread, so that the children remain.
   const commentUpdate = {
-    body: "",
     deleted: true
   };
 
