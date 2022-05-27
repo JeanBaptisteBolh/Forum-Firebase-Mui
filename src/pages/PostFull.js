@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { 
-  CircularProgress, 
-  Card, 
-  Grid, 
-  Typography, 
-  Box, 
+import {
+  CircularProgress,
+  Card,
+  Grid,
+  Typography,
+  Box,
   Button,
   Dialog,
 } from "@mui/material";
@@ -29,7 +29,7 @@ const PostFull = () => {
   const [postLoading, setPostLoading] = useState(true);
   const [post, setPost] = useState({});
   const [displayName, setDisplayName] = useState("");
-  
+
   // If the logged in user created the post, this should be true.  (used to display edit/delete options)
   const [userCreatedPost, setUserCreatedPost] = useState(false);
 
@@ -41,7 +41,7 @@ const PostFull = () => {
 
   // Controls reply submission loading wheel while
   const [replySubmissionLoading, setReplySumbissionLoading] = useState(false);
-  
+
   // Used to show the new reply
   const [replyId, setReplyId] = useState({});
   const [reply, setReply] = useState({});
@@ -51,8 +51,11 @@ const PostFull = () => {
   const onCommentSubmit = async (data) => {
     toggleShowReplyForm(false);
     setReplySumbissionLoading(true);
-    const [newCommentId, newCommentData] = await commentOnPost(id, data.comment);
-    
+    const [newCommentId, newCommentData] = await commentOnPost(
+      id,
+      data.comment
+    );
+
     if (!newCommentData) {
       // TODO: Show error box for comment
       toggleShowReplyForm(true);
@@ -70,7 +73,7 @@ const PostFull = () => {
     await deletePost(id);
 
     navigate("/home");
-  }
+  };
 
   const showPostDeleteDialogue = () => {
     setShowDeletionDialogue(true);
@@ -85,7 +88,7 @@ const PostFull = () => {
       try {
         const postData = await getPostData(pid).catch(console.error);
         const userDisplayName = await getUserDisplayName(postData.uid);
-        
+
         setPost(postData);
         setDisplayName(userDisplayName);
         setPostLoading(false);
@@ -93,14 +96,12 @@ const PostFull = () => {
         if (auth.currentUser.uid === postData.uid) {
           setUserCreatedPost(true);
         }
-
       } catch (err) {
         console.error(err);
       }
     };
 
     getData(id);
-
   }, []);
 
   useEffect(() => {
@@ -128,69 +129,74 @@ const PostFull = () => {
         {/* Contains the post info */}
         <Grid container wrap="nowrap">
           {/* Upvote/Downvote Box */}
-          <Grid item sx={{ 
-            padding: 1
-          }}>
-            <VoteOnPost 
-              pid={id}
-            />
+          <Grid
+            item
+            sx={{
+              padding: 1,
+            }}
+          >
+            <VoteOnPost pid={id} />
           </Grid>
 
           {/* Post Title/Body Box */}
           <Grid item sx={{ padding: 1 }}>
-            <Typography variant="body2" noWrap>{displayName}</Typography>
+            <Typography variant="body2" noWrap>
+              {displayName}
+            </Typography>
             <Typography variant="h6">{post.title}</Typography>
             <Typography variant="body2">{post.body}</Typography>
-            <Button 
-              size="small" 
-              sx={{ textTransform: "none", p: 0, mt: 1 }} 
+            <Button
+              size="small"
+              sx={{ textTransform: "none", p: 0, mt: 1 }}
               color="error"
-              onClick={() => {showPostDeleteDialogue()}}
+              onClick={() => {
+                showPostDeleteDialogue();
+              }}
             >
               Delete post
             </Button>
           </Grid>
         </Grid>
 
-        { /********** Form to leave a comment **********/}
-        { showReplyForm && 
+        {/********** Form to leave a comment **********/}
+        {showReplyForm && (
           <Box sx={{ mx: 2, my: 1 }}>
-            <CreateCommentForm 
-              onSubmit={onCommentSubmit}
+            <CreateCommentForm onSubmit={onCommentSubmit} />
+          </Box>
+        )}
+
+        {/********** Waiting for reply submission result wheel **********/}
+        {replySubmissionLoading && <CircularProgress />}
+
+        {/********** Display the new reply **********/}
+        {replied && (
+          <Box sx={{ ml: 1 }}>
+            <NewReply
+              cid={replyId}
+              displayName={displayName}
+              depth={reply.depth}
+              body={reply.body}
             />
           </Box>
-        }
+        )}
 
-        { /********** Waiting for reply submission result wheel **********/}
-        { replySubmissionLoading && 
-          <CircularProgress/>
-        }
-
-        { /********** Display the new reply **********/ }
-        { replied && 
-          <NewReply
-            cid={replyId}
-            displayName={displayName}
-            depth={reply.depth}
-            body={reply.body}
-          />
-        }
-
-        { /********** Comment List **********/ }
-        <CommentList pid={id}/>
+        {/********** Comment List **********/}
+        <CommentList pid={id} />
       </Card>
 
       {/********** Post deletion confirmation dialogue **********/}
-      <Dialog
-        open={showDeletionDialogue}
-        onClose={hidePostDeleteDialogue}
-      >
+      <Dialog open={showDeletionDialogue} onClose={hidePostDeleteDialogue}>
         <Typography sx={{ m: 2 }}>
           Are you sure you want to delete this post?
         </Typography>
-        <Grid container alignItems="right" justifyContent="right" sx={{ mb: 2 }}>
+        <Grid
+          container
+          alignItems="right"
+          justifyContent="right"
+          sx={{ mb: 2 }}
+        >
           <Grid item>
-            <Button 
+            <Button
               sx={{ textTransform: "none", p: 0 }}
               onClick={hidePostDeleteDialogue}
             >
@@ -198,17 +204,16 @@ const PostFull = () => {
             </Button>
           </Grid>
           <Grid item>
-            <Button 
-              sx={{ textTransform: "none", p: 0 }} 
+            <Button
+              sx={{ textTransform: "none", p: 0 }}
               color="error"
               onClick={handlePostDelete}
             >
-                Delete
+              Delete
             </Button>
           </Grid>
         </Grid>
       </Dialog>
-
     </div>
   ) : (
     <div>
