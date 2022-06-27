@@ -6,6 +6,7 @@ import { initializeApp } from "@firebase/app";
 // import { getAnalytics } from "@firebase/analytics";
 import {
   getFirestore,
+  connectFirestoreEmulator,
   query,
   getDocs,
   collection,
@@ -17,6 +18,7 @@ import {
 
 import {
   getAuth,
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -35,6 +37,12 @@ const auth = getAuth(app);
 
 // Initialize Database Module
 const db = getFirestore(app);
+
+// FIREBASE EMULATOR
+// if (window.location.hostname === 'localhost') {
+//   connectFirestoreEmulator(db, 'localhost', 8080);
+//   connectAuthEmulator(auth, 'http://localhost:9099');
+// }
 
 // Initialize Analytics
 //const analytics = getAnalytics(app);
@@ -144,7 +152,6 @@ const userEmailExists = async (email) => {
 const getUserDisplayName = async (uid) => {      
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
-  
   if (docSnap.exists()) {
     const name = docSnap.data().firstname + " " + docSnap.data().lastname
     return name;

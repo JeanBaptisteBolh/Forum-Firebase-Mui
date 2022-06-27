@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/users";
@@ -12,6 +12,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   const [user, loading, error] = useAuthState(auth);
+
+  const { searchText } = useParams();
 
   useEffect(() => {
     // If we're still authenticating, don't check for a user
@@ -27,7 +29,7 @@ const Home = () => {
   return (
     <div>
       <TopBar posting={false} />
-      <PostList/>
+      <PostList searchText={searchText}/>
     </div>
   );
 };

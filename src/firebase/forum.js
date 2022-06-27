@@ -149,6 +149,25 @@ const getAllPosts = async () => {
   }
 };
 
+/**
+ * Get and return an array of a users comments
+ * @return {array} An array of a user's forum comments
+ */
+ const getUserComments = async (uid) => {
+  try {
+    const q = query(collection(db, "comments"), where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+    const commentDataArray = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    return commentDataArray;
+  } catch (err) {
+    console.error("Failed to retrieve data", err);
+    return;
+  }
+};
+
 
 /**
  * Get and return an object containing the comments for a post
@@ -375,7 +394,6 @@ const commentOnComment = async (cid, comment) => {
     return;
   } else {
     // Add the comment id to the comments dictionary of comments
-    console.log(cid);
     const commentDocRef = doc(db, "comments", cid);
     var updateDict = {};
     updateDict[`comments.${newCommentId}`] = true;
@@ -446,6 +464,7 @@ export {
   deleteCommentInLiveThread,
   getAllPosts, 
   getUserPosts,
+  getUserComments,
   getCommentIdsForPost,
   getPostData,
   getCommentData,

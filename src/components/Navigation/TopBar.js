@@ -1,21 +1,37 @@
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
 
-import {
-  Button,
-  Box,
-  Toolbar,
-  InputBase,
-  styled,
-  alpha,
-} from "@mui/material";
+import { Button, Box, Toolbar, InputBase, styled, alpha } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { FcGlobe } from "react-icons/fc";
 
-import AccountMenu from "./AccountMenu"
+import AccountMenu from "./AccountMenu";
 
 const TopBar = (props) => {
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState("");
+
+  // react-hook-form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      search: "",
+    },
+  });
+
+  // Handler for create post submission
+  const onSubmit = async (data) => {
+    if (data.search === "") {
+      navigate(`/home`);
+    } else {
+      navigate(`/home/search/${data.search}`);
+    }
+  };
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -74,10 +90,21 @@ const TopBar = (props) => {
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
-          />
+          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="search"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <StyledInputBase
+                  onChange={onChange}
+                  value={value}
+                  id="search"
+                  placeholder="Search…"
+                  inputProps={{ "aria-label": "search" }}
+                />
+              )}
+            />
+          </Box>
         </Search>
 
         {!props.posting && (
@@ -93,7 +120,6 @@ const TopBar = (props) => {
         )}
 
         <AccountMenu />
-
       </Toolbar>
     </Box>
   );

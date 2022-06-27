@@ -17,9 +17,10 @@ const App = () => {
           <Route path="/" element={<SignIn/>} />
           <Route path="/signup" element={<SignUp/>} />
           <Route path="/home" element={<Home/>} />
+          <Route path="/home/search/:searchText" element={<Home/>} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/create-post" element={<CreatePost/>} />
-          <Route path="/post/:id" element={<PostFull />} />
+          <Route path="/post/:id" element={<PostFull/>} />
         </Routes>
     </div>
   );
