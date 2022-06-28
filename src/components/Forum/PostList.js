@@ -18,7 +18,6 @@ const PostList = (props) => {
   const [sortBestFlag, setSortBestFlag] = useState(false);
 
   useEffect(() => {
-    console.log("reloading");
     const getPosts = async (searchText) => {
       try {
         let newPostDataArray = await getAllPosts().catch(console.error);
