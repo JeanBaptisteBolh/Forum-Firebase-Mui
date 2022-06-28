@@ -34,7 +34,6 @@ const CreatePost = () => {
     <Box>
       <TopBar posting={true} />
       <Box sx={{ mx: 2 }}>
-        {/** PAGE TITLE **/}
         <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
           Create Post
         </Typography>

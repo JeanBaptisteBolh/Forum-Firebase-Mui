@@ -18,7 +18,6 @@ import {
 
 import {
   getAuth,
-  connectAuthEmulator,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -37,12 +36,6 @@ const auth = getAuth(app);
 
 // Initialize Database Module
 const db = getFirestore(app);
-
-// FIREBASE EMULATOR
-// if (window.location.hostname === 'localhost') {
-//   connectFirestoreEmulator(db, 'localhost', 8080);
-//   connectAuthEmulator(auth, 'http://localhost:9099');
-// }
 
 // Initialize Analytics
 //const analytics = getAnalytics(app);
