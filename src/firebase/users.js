@@ -71,7 +71,6 @@ const createUserEmailPassword = async (firstname, lastname, email, password) => 
   }
 };
 
-
 // Sign in via email/password
 const loginEmailPassword = async (email, password) => {
   try {

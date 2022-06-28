@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import PostFull from './pages/PostFull'
+import ResetPassword from './pages/ResetPassword'
 
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<SignIn/>} />
           <Route path="/signup" element={<SignUp/>} />
+          <Route path="/reset-password" element={<ResetPassword/>} />
           <Route path="/home" element={<Home/>} />
           <Route path="/home/search/:searchText" element={<Home/>} />
           <Route path="/profile" element={<Profile/>} />

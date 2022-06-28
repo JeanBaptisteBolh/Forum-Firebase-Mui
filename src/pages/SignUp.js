@@ -4,13 +4,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
 
 // Material UI imports
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import { Button, TextField, Grid, Box, Typography, Container } from "@mui/material";
 import { FcGlobe } from "react-icons/fc";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 
 // Component imports
 import DividerWithText from "../components/DividerWithText";

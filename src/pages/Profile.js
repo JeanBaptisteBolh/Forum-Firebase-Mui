@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { Typography, Fade, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import {
+  Typography,
+  Fade,
+  Box,
+  ToggleButtonGroup,
+  ToggleButton,
+  Stack,
+} from "@mui/material";
 
 import TopBar from "../components/Navigation/TopBar";
 import Post from "../components/Forum/Post";
@@ -59,14 +66,17 @@ const Profile = () => {
     <div>
       <TopBar posting={false} />
 
-      <Box sx={{ 
-        display: 'flex',
-        flexDirection: 'column', 
-        alignItems: 'center',
-        mx: 2
-      }}>
-        <Typography variant="h4" sx = {{ mb: 2, fontWeight: 'medium' }}>My Posts</Typography>
-      
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 2, fontWeight: "medium" }}>
+          My Posts
+        </Typography>
+
         {/* <ToggleButtonGroup
             color="primary"
             value={alignment}
@@ -79,7 +89,7 @@ const Profile = () => {
 
         <Box sx={{ display: "flex" }}>
           <Fade in={showPosts}>
-            <Box>
+            <Stack spacing={1} sx={{ mx: 2, mb: 1 }}>
               {userPosts.map((post) => {
                 return (
                   <Post
@@ -92,7 +102,7 @@ const Profile = () => {
                   />
                 );
               })}
-            </Box>
+            </Stack>
           </Fade>
         </Box>
       </Box>

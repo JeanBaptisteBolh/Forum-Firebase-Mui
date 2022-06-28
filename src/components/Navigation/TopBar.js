@@ -109,11 +109,13 @@ const TopBar = (props) => {
 
         {!props.posting && (
           <Button
-            variant="outlined"
+            variant="contained"
             color="inherit"
             onClick={() => {
               navigate("/create-post");
             }}
+            style={{ textTransform: 'none' }}
+            sx={{ boxShadow: 0 }} 
           >
             Post
           </Button>

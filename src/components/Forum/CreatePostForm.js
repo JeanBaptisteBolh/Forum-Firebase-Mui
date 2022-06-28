@@ -54,7 +54,7 @@ const CreatePostForm = () => {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit, onError)}>
       <Grid container spacing={2} sx={{ mt: 0.1 }}>
-        {/** EMAIL FIELD **/}
+        {/** TITLE FIELD **/}
         <Grid item xs={12}>
           <Controller
             name="title"
@@ -74,7 +74,7 @@ const CreatePostForm = () => {
           />
         </Grid>
 
-        {/** PASSWORD NAME FIELD **/}
+        {/** BODY FIELD **/}
         <Grid item xs={12}>
           <Controller
             name="body"
@@ -89,6 +89,8 @@ const CreatePostForm = () => {
                 label="Body"
                 id="body"
                 autoComplete="body"
+                multiline
+                rows={4}
               />
             )}
           />

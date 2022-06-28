@@ -158,7 +158,7 @@ const SignIn = () => {
 
             <Grid container sx={{ mb: 2 }}>
               <Grid item xs>
-                <Link to="/">
+                <Link to="/reset-password">
                   <Typography variant="body2">
                     Forgot Password?
                   </Typography> 
@@ -167,7 +167,7 @@ const SignIn = () => {
               <Grid item>
                 <Link to="/signup">
                   <Typography variant="body2">
-                    Don't have an account? Sign Up
+                    Sign Up
                   </Typography> 
                 </Link>
               </Grid>
